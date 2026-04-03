@@ -27,16 +27,18 @@ export async function insertNewPoem(text: string) {
   let results: PoemEntry[] = [];
 
   try {
-    const [rows] = await conn.execute("SELECT * FROM poem_entries");
+    const [rows] = await conn.execute(
+      "SELECT * FROM poem_entries ORDER BY created_at DESC LIMIT 40"
+    );
     results = rows as PoemEntry[];
   } catch (error) {
     console.error("Error fetching poems:", error);
-    throw new Error("Failed to fetch poems from the database.");
+    throw new Error("Erro ao procurar por frases na aplicação.");
   }
 
   results.forEach((poem) => {
     if (poem.normalized_text === normalized_text) {
-      throw new Error("Poem already exists in the database.");
+      throw new Error("Essa frase já foi inserida antes.");
     }
   });
   try {
@@ -47,7 +49,7 @@ export async function insertNewPoem(text: string) {
     return insertResult;
   } catch (error) {
     console.error("Error inserting poem:", error);
-    throw new Error("Failed to insert poem into the database.");
+    throw new Error("Erro ao inserir frase.");
   }
 }
 
